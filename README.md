@@ -6,9 +6,7 @@
 
 ## Opis projektu
 
-- Projekt przedstawia proces paletyzacji. 
-
-Projekt składa się z trzech automatów: 
+Projekt przedstawia proces paletyzacji, który składa się z trzech automatów: 
 * automatu nadrzędnego związanego ze stanem palety oraz włączeniem procesu,
 * automatu podrzędnego odpowiadającemu procesowi przenoszenia produktów na paletę,
 * automatu podrzędnego ilustrującego stan lini taśmowej, po której przemieszczane są obiekty do spaletyzowania.
