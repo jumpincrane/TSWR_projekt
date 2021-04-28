@@ -10,6 +10,6 @@
 
 Projekt składa się z trzech automatów: nadrzędnego i dwóch podrzędnych, które ilustrują przebieg zautomatyzowanego procesu paletyzacji.
 
-# Tymczasowy graf
+# Schemat procesu
 ![Graph](https://github.com/patrykGawron/TSWR_projekt/blob/master/diagrams.png)
 
