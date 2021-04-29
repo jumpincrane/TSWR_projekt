@@ -1,0 +1,4 @@
+# IGNORE FILES
+**/build
+**/devel
+**/.catkin_workspace

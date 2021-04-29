@@ -1,2 +1,0 @@
-
--DCATKIN_DEVEL_PREFIX=/home/wika/TSWR_projekt/devel -DCMAKE_INSTALL_PREFIX=/home/wika/TSWR_projekt/install -G Unix Makefiles
