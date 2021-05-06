@@ -1,6 +1,7 @@
 from statemachine import StateMachine, State
 from statemachine.mixins import MachineMixin
 
+
 class TrafficLightMachine(StateMachine):
     "A traffic light machine"
     green = State('Green', initial=True)
@@ -15,14 +16,18 @@ class TrafficLightMachine(StateMachine):
 
     def on_slowdown(self):
         print('Slow down!')
+
     def on_stop(self):
         print('Stop!')
+
     def on_go(self):
         print("Let's go!")
+
 
 class MyModel0(object):
     def __init__(self, state):
         self.state = state
+
 
 class CampaignMachineWithKeys(StateMachine):
     "A workflow machine"
@@ -37,7 +42,6 @@ class CampaignMachineWithKeys(StateMachine):
     cancel = cancelled.from_(draft, producing)
 
 
-
 class MyModel(MachineMixin):
     state_machine_name = 'CampaignMachineWithKeys'
 
@@ -49,9 +53,11 @@ class MyModel(MachineMixin):
     def __repr__(self):
         return "{}({!r})".format(type(self).__name__, self.__dict__)
 
+
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+
 
 def main():
     traffic_light = TrafficLightMachine()
@@ -63,13 +69,13 @@ def main():
     print(traffic_light.slowdown())
     print(traffic_light.current_state)
     print(traffic_light.is_yellow)
-    #print(traffic_light.slowdown())
+    # print(traffic_light.slowdown())
     traffic_light.run('stop')
     print(traffic_light.is_red)
     machine = TrafficLightMachine(start_value='red')
     print(traffic_light.is_red)
 
-# making object depending on another object
+    # making object depending on another object
     obj = MyModel0(state='red')
     traffic_light = TrafficLightMachine(obj)
     print(traffic_light.is_red)
@@ -80,8 +86,7 @@ def main():
     print(obj.state)
     print(traffic_light.is_yellow)
 
-
-#Callbacks
+    # Callbacks
     stm = TrafficLightMachine()
     stm.slowdown()
     stm.stop()
@@ -89,6 +94,7 @@ def main():
     stm.cycle()
     stm.cycle()
     stm.cycle()
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
