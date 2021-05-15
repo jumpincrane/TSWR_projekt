@@ -1,10 +1,12 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import sys
 
 #from console import *
-from generator import Gen, setTransition
+from generator import Gen, setTransition, generate_states
 from statemachine import StateMachine, State, Transition
 
+import yaml
 # Supervisor process
 # IDLE                                                  +
 # A = waiting for empty pallet to arrive                +
@@ -26,62 +28,25 @@ from statemachine import StateMachine, State, Transition
 # E = gripper open
 # F = product is released
 
-# define states for a master (way of passing args to class)
+# load states for a master (way of passing args to class)
+with open("../config/options.yaml", "r") as file:
+    loaded = yaml.load(file, Loader=yaml.FullLoader)
 
-supervisor_options = [
-    {"name": "IDLE", "initial": True, "value": "idle"},     #0
-    {"name": "Waiting for empty pallet to arrive", "initial": False, "value": "a"},          #1
-    {"name": "Palletizing process", "initial": False, "value": "b"},          #2
-    {"name": "Waiting for full pallet to exit", "initial": False, "value": "c"}           #3
-]
+pallet_p_states = generate_states(loaded["pallet_p_options"])
+supervisor_states = generate_states(loaded["supervisor_options"])
+sub_states = generate_states(loaded["sub_options"])
 
-sub_options = [
-    {"name": "Waiting for palletization process to start", "initial": True, "value": "idle"},     #0
-    {"name": "Waiting for product to arrive", "initial": False, "value": "a"},          #1
-    {"name": "Product is ready to hold", "initial": False, "value": "b"},          #2
-    {"name": "Product is up", "initial": False, "value": "c"}           #3
-]
 
-pallet_p_options = [
-    {"name": "Waiting for ready product to hold", "initial": True, "value": "idle"},     #0
-    {"name": "Robot's movement towards product", "initial": False, "value": "a"},          #1
-    {"name": "Gripper latches", "initial": False, "value": "b"},          #2
-    {"name": "Product is up", "initial": False, "value": "c"},          #3
-    {"name": "Robot's movement towards pallet", "initial": False, "value": "d"},          #4
-    {"name": "Gripper opens", "initial": False, "value": "e"},          #5
-    {"name": "Product is released", "initial": False, "value": "f"}]          #6
+with open("../config/from_tos.yaml", 'r') as file:
+    from_to = yaml.load(file, Loader=yaml.FullLoader)
 
-# create State objects for a master
-# ** -> unpack dict to args
-pallet_p_states = [State(**opt) for opt in pallet_p_options]
-supervisor_states = [State(**opt) for opt in supervisor_options]
-sub_states = [State(**opt) for opt in sub_options]
+pallet_p_from_to = from_to["pallet_p_from_to"]
+supervisor_from_to = from_to["supervisor_from_to"]
+sub_from_to = from_to["sub_from_to"]
 
-# valid transitions for a master (indices of states from-to)
-pallet_p_form_to = [
-    [0, [1]],
-    [1, [2]],
-    [2, [3]],
-    [3, [2, 4]],
-    [4, [5]],
-    [5, [6]],
-    [6, [0, 5]]]
-
-supervisor_form_to = [
-    [0, [1]],
-    [1, [2]],
-    [2, [3]],
-    [3, [0]]]
-
-sub_form_to = [
-    [0, [1]],
-    [1, [2]],
-    [2, [3]],
-    [3, [0, 1]]]
-
-pallet_p_states, pallet_p_transitions = setTransition(pallet_p_form_to, pallet_p_states)
-supervisor_states, supervisor_transitions = setTransition(supervisor_form_to ,supervisor_states)
-sub_states, sub_transitions = setTransition(sub_form_to, sub_states)
+pallet_p_states, pallet_p_transitions = setTransition(pallet_p_from_to, pallet_p_states)
+supervisor_states, supervisor_transitions = setTransition(supervisor_from_to,supervisor_states)
+sub_states, sub_transitions = setTransition(from_to["sub_from_to"], sub_states)
 
 
 def main():
@@ -112,7 +77,7 @@ def main():
 
         print(f'You are in main diagram Initial State: {master.current_state.name}')
         print("Active transitions : ")
-        for i in supervisor_form_to[0][1]:
+        for i in supervisor_from_to[0][1]:
             transition_name = supervisor_transitions[f'transition_0_{i}'].identifier
             if transition_name == "transition_0_1":
                 print("*    ", transition_name, ": START - motor_pallet: on")
@@ -125,7 +90,7 @@ def main():
             print(f'You are in Main diagram state : {master.current_state.name}')
 
             print("Active transitions : ")
-            for i in supervisor_form_to[1][1]:
+            for i in supervisor_from_to[1][1]:
                 transition_name = supervisor_transitions[f'transition_1_{i}'].identifier
                 if transition_name == "transition_1_2":
                     print("*    ", transition_name, ": Pallet arrived")
@@ -141,7 +106,7 @@ def main():
                 print(f"You are in 1-st sub diagram state : ", product.current_state.name)
 
                 print("Active transitions : ")
-                for i in sub_form_to[0][1]:
+                for i in sub_from_to[0][1]:
                     transition_name = sub_transitions[f'transition_0_{i}'].identifier
                     if transition_name == "transition_0_1":
                         print("*    ", transition_name, ": Start of the process : motor_object: on")
@@ -155,7 +120,7 @@ def main():
                         print(f"You are in 1-st sub diagram state : ", product.current_state.name)
 
                         print("Active transitions : ")
-                        for i in sub_form_to[1][1]:
+                        for i in sub_from_to[1][1]:
                             transition_name = sub_transitions[f'transition_1_{i}'].identifier
                             if transition_name == "transition_1_2":
                                 print("*    ", transition_name, ": Sensor detects the product : motor_object: off")
@@ -170,10 +135,10 @@ def main():
                                 print(
                                     "When product is ready the second subordinate diagram is on, which is responsible for robot's movemoent")
 
-                                print(f"You are in 2-st sub diagram state : ", pallet.current_state.name)
+                                print(f"You are in 2-nd sub diagram state : ", pallet.current_state.name)
 
                                 print("Active transitions : ")
-                                for i in pallet_p_form_to[0][1]:
+                                for i in pallet_p_from_to[0][1]:
                                     transition_name = pallet_p_transitions[f'transition_0_{i}'].identifier
                                     if transition_name == "transition_0_1":
                                         print("*    ", transition_name, ": Start of product movement process")
@@ -185,7 +150,7 @@ def main():
                                     print(f'You are in 2-st sub diagram state : {pallet.current_state.name}')
 
                                     print("Active transitions : ")
-                                    for i in pallet_p_form_to[1][1]:
+                                    for i in pallet_p_from_to[1][1]:
                                         transition_name = pallet_p_transitions[f'transition_1_{i}'].identifier
                                         if transition_name == "transition_1_2":
                                             print("*    ", transition_name, ": Goal position is aimed")
@@ -199,7 +164,7 @@ def main():
                                             print(f'You are in 2-st sub diagram state : {pallet.current_state.name}')
 
                                             print("Active transitions : ")
-                                            for i in pallet_p_form_to[2][1]:
+                                            for i in pallet_p_from_to[2][1]:
                                                 transition_name = pallet_p_transitions[f'transition_2_{i}'].identifier
                                                 if transition_name == "transition_2_3":
                                                     print("*    ", transition_name, ": Holding up the product")
@@ -212,7 +177,7 @@ def main():
                                                     f'You are in 2-st sub diagram state : {pallet.current_state.name}')
 
                                                 print("Active transitions : ")
-                                                for i in pallet_p_form_to[3][1]:
+                                                for i in pallet_p_from_to[3][1]:
                                                     transition_name = pallet_p_transitions[
                                                         f'transition_3_{i}'].identifier
                                                     if transition_name == "transition_3_4":
@@ -237,7 +202,7 @@ def main():
                                         print(f'You are in 2-st sub diagram state : {pallet.current_state.name}')
 
                                         print("Active transitions : ")
-                                        for i in pallet_p_form_to[4][1]:
+                                        for i in pallet_p_from_to[4][1]:
                                             transition_name = pallet_p_transitions[f'transition_4_{i}'].identifier
                                             if transition_name == "transition_4_5":
                                                 print("*    ", transition_name, ": Goal position is aimed")
@@ -252,7 +217,7 @@ def main():
                                                     f'You are in 2-st sub diagram state : {pallet.current_state.name}')
 
                                                 print("Active transitions : ")
-                                                for i in pallet_p_form_to[5][1]:
+                                                for i in pallet_p_from_to[5][1]:
                                                     transition_name = pallet_p_transitions[
                                                         f'transition_5_{i}'].identifier
                                                     if transition_name == "transition_5_6":
@@ -266,7 +231,7 @@ def main():
                                                         f'You are in 2-st sub diagram state : {pallet.current_state.name}')
 
                                                     print("Active transitions : ")
-                                                    for i in pallet_p_form_to[6][1]:
+                                                    for i in pallet_p_from_to[6][1]:
                                                         transition_name = pallet_p_transitions[
                                                             f'transition_6_{i}'].identifier
                                                         if transition_name == "transition_6_5":
@@ -299,7 +264,7 @@ def main():
                             print(f"You are in 1-st sub diagram state : ", product.current_state.name)
 
                             print("Active transitions : ")
-                            for i in sub_form_to[2][1]:
+                            for i in sub_from_to[2][1]:
                                 transition_name = sub_transitions[f'transition_2_{i}'].identifier
                                 if transition_name == "transition_2_3":
                                     print("*    ", transition_name, ": Robot is holding the product")
@@ -311,7 +276,7 @@ def main():
                                 print(f"You are in 1-st sub diagram state : ", product.current_state.name)
 
                                 print("Active transitions : ")
-                                for i in sub_form_to[3][1]:
+                                for i in sub_from_to[3][1]:
                                     transition_name = sub_transitions[f'transition_3_{i}'].identifier
                                     if transition_name == "transition_3_0":
                                         print("*    ", transition_name, ": Pallet is full")
@@ -335,7 +300,7 @@ def main():
 
                     print(master.current_state.name)
                     print("Active transitions : ")
-                    for i in supervisor_form_to[2][1]:
+                    for i in supervisor_from_to[2][1]:
                         transition_name = supervisor_transitions[f'transition_2_{i}'].identifier
                         if transition_name == "transition_2_3":
                             print("*    ", transition_name, ": Process finished : The pallet is full")
@@ -347,7 +312,7 @@ def main():
                         print(f'You are in Main diagram state : {master.current_state.name}')
 
                         print("Active transitions : ")
-                        for i in supervisor_form_to[3][1]:
+                        for i in supervisor_from_to[3][1]:
                             transition_name = supervisor_transitions[f'transition_3_{i}'].identifier
                             if transition_name == "transition_3_0":
                                 print("*    ", transition_name, "The pallet is full - motor_pallet : on")

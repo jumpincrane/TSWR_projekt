@@ -61,7 +61,10 @@ def setTransition(form, object_states):
 
     return object_states, object_transitions
 
-
+def generate_states(options):
+    # create State objects for a master
+    # ** -> unpack dict to args
+    return  [State(**opt) for opt in options]
 
 
 

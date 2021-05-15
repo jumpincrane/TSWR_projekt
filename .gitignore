@@ -1,4 +1,5 @@
 # IGNORE FILES
+__pycache__/
 **/build
 **/devel
 **/.catkin_workspace
