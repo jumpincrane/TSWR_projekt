@@ -30,16 +30,20 @@ import yaml
 # E = gripper open
 # F = product is released
 
-graph = nx.MultiDiGraph()
-
+pallet_p_graph = nx.MultiDiGraph()
+supervisor_graph = nx.MultiDiGraph()
+sub_states_graph = nx.MultiDiGraph()
 # load states for a master (way of passing args to class)
 with open("../config/options.yaml", "r") as file:
     loaded = yaml.load(file, Loader=yaml.FullLoader)
 
-pallet_p_states = generate_states(loaded["pallet_p_options"])
-supervisor_states = generate_states(loaded["supervisor_options"])
-sub_states = generate_states(loaded["sub_options"])
+pallet_p_options = loaded["pallet_p_options"]
+supervisor_options = loaded["supervisor_options"]
+sub_options = loaded["sub_options"]
 
+pallet_p_states = generate_states(pallet_p_options)
+supervisor_states = generate_states(supervisor_options)
+sub_states = generate_states(sub_options)
 
 
 with open("../config/from_tos.yaml", 'r') as file:
@@ -51,29 +55,55 @@ sub_from_to = from_to["sub_from_to"]
 
 pallet_p_states, pallet_p_transitions = setTransition(pallet_p_from_to, pallet_p_states)
 supervisor_states, supervisor_transitions = setTransition(supervisor_from_to,supervisor_states)
-sub_states, sub_transitions = setTransition(from_to["sub_from_to"], sub_states)
+sub_states, sub_transitions = setTransition(sub_from_to, sub_states)
 
 
-# nodes are int ids, since from_to is defined in terms of 0 -> 1 etc.
-i = 0
-for dict in loaded["pallet_p_options"]:
-    initial, name, value = dict.values()
-    # name is node's attribute
-    graph.add_node(i, name=name)
-    i+=1
+def create_and_show_graph(graph, states, edges, fig):
+    # nodes are int ids, since from_to is defined in terms of 0 -> 1 etc.
+    i = 0
+    for dict in states:
+        initial, name, value = dict.values()
+        # name is node's attribute
+        if initial:
+            graph.add_node(i, name=name, color="red")
+        else:
+            graph.add_node(i, name=name, color="green")
 
-# get all labels for drawing
-labels = nx.get_node_attributes(graph, 'name')
+        i+=1
 
-# [from_node, [to_node1, to_node2, ..., to_nodeN]]
-for edge in pallet_p_from_to: 
-    from_node = edge[0]
-    for to_node in edge[1]:
-        graph.add_edge(from_node, to_node)
-    print(edge)
-nx.draw(graph, with_labels=True, labels=labels, connectionstyle='arc3, rad = 0.1')
-plt.ion()
-plt.show()
+    # get all labels for drawing
+    labels = nx.get_node_attributes(graph, 'name')
+    # get colors of all the nodes
+    colors = nx.get_node_attributes(graph, 'color').values()
+    # add edges from list such as: [from_node, [to_node1, to_node2, ..., to_nodeN]]
+    for edge in edges: 
+        from_node = edge[0]
+        for to_node in edge[1]:
+            graph.add_edge(from_node, to_node)
+
+    plt.figure(fig, figsize=(10.0, 10.0))
+    
+    pos = nx.shell_layout(graph)
+    nx.draw(graph, pos, with_labels=False, connectionstyle='arc3, rad = 0.1', node_color=colors, alpha=0.75)
+
+    # offset labels along y axis so they are above nodes
+    pos_higher = {}
+    y_off = 0.1  
+    for k, v in pos.items():
+        pos_higher[k] = (v[0], v[1]+y_off)
+    nx.draw_networkx_labels(graph, pos_higher, labels)
+
+    # scale x axis to fit labels
+    l, r = plt.xlim()
+    plt.xlim(l-0.3, r+0.3)
+
+    # interactive mode so plt.show() is non-blocking
+    plt.ion()
+    plt.show()
+
+create_and_show_graph(pallet_p_graph, pallet_p_options, pallet_p_from_to, 0)
+create_and_show_graph(supervisor_graph, supervisor_options, supervisor_from_to, 1)
+create_and_show_graph(sub_states_graph, sub_options, sub_from_to, 2)
 
 
 def main():
