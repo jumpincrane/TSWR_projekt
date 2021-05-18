@@ -5,6 +5,8 @@ import sys
 #from console import *
 from generator import Gen, setTransition, generate_states
 from statemachine import StateMachine, State, Transition
+import networkx as nx
+import matplotlib.pyplot as plt
 
 import yaml
 # Supervisor process
@@ -28,6 +30,8 @@ import yaml
 # E = gripper open
 # F = product is released
 
+graph = nx.MultiDiGraph()
+
 # load states for a master (way of passing args to class)
 with open("../config/options.yaml", "r") as file:
     loaded = yaml.load(file, Loader=yaml.FullLoader)
@@ -35,6 +39,7 @@ with open("../config/options.yaml", "r") as file:
 pallet_p_states = generate_states(loaded["pallet_p_options"])
 supervisor_states = generate_states(loaded["supervisor_options"])
 sub_states = generate_states(loaded["sub_options"])
+
 
 
 with open("../config/from_tos.yaml", 'r') as file:
@@ -47,6 +52,28 @@ sub_from_to = from_to["sub_from_to"]
 pallet_p_states, pallet_p_transitions = setTransition(pallet_p_from_to, pallet_p_states)
 supervisor_states, supervisor_transitions = setTransition(supervisor_from_to,supervisor_states)
 sub_states, sub_transitions = setTransition(from_to["sub_from_to"], sub_states)
+
+
+# nodes are int ids, since from_to is defined in terms of 0 -> 1 etc.
+i = 0
+for dict in loaded["pallet_p_options"]:
+    initial, name, value = dict.values()
+    # name is node's attribute
+    graph.add_node(i, name=name)
+    i+=1
+
+# get all labels for drawing
+labels = nx.get_node_attributes(graph, 'name')
+
+# [from_node, [to_node1, to_node2, ..., to_nodeN]]
+for edge in pallet_p_from_to: 
+    from_node = edge[0]
+    for to_node in edge[1]:
+        graph.add_edge(from_node, to_node)
+    print(edge)
+nx.draw(graph, with_labels=True, labels=labels, connectionstyle='arc3, rad = 0.1')
+plt.ion()
+plt.show()
 
 
 def main():
