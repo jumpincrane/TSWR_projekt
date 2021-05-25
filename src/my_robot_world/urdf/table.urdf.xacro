@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:macro name="table"/>
+        
+  <link name="world"/>
+
+  <joint name="fixed" type="fixed">
+    <parent link="world"/>
+    <child link="table_link"/>
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
+  </joint>
+  
+  <link name="table_link">
+  
+    <visual>
+      <origin rpy="0.0 0 0" xyz="0 0 0.35"/>
+      <geometry>
+        <cylinder radius="0.3" length="0.7" />
+      </geometry>
+    </visual>
+    
+    <inertial>
+      <origin xyz="0 0 0.35" rpy="0 0 0"/>
+      <mass value="20"/>
+      <inertia
+        ixx="1.0" ixy="0.0" ixz="0.0"
+        iyy="1.0" iyz="0.0"
+        izz="1.0"/>
+    </inertial>
+  </link>
+    
+</robot>
