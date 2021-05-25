@@ -59,18 +59,17 @@ sub_states, sub_transitions = setTransition(sub_from_to, sub_states)
 
 
 
-def create_and_show_graph(graph, states, edges, ax, color):
+def create_and_show_graph(graph, states, edges, ax, color, current=""):
     plt.cla()
     # nodes are int ids, since from_to is defined in terms of 0 -> 1 etc.
     i = 0
     for dict in states:
         initial, name, value = dict.values()
         # name is node's attribute
-        if initial:
+        if name == current:
             graph.add_node(i, name=name, color="red")
         else:
             graph.add_node(i, name=name, color=color)
-
         i+=1
 
     # get all labels for drawing
@@ -93,10 +92,6 @@ def create_and_show_graph(graph, states, edges, ax, color):
         pos_higher[k] = (v[0], v[1]+y_off)
     nx.draw_networkx_labels(graph, pos_higher, labels, ax=ax)
 
-    # scale x axis to fit labels
-    # l, r = plt.xlim()
-    # plt.xlim(l-0.3, r+0.3)
-
     # interactive mode so plt.show() is non-blocking
     plt.ion()
     plt.show()
@@ -104,7 +99,13 @@ def create_and_show_graph(graph, states, edges, ax, color):
 fig, axs = plt.subplots(1, 3)
 colors = ["green", "blue"]
 
-for i in range(10):
+def redraw(curr_pallet="", curr_supervisor="", curr_sub=""):
+    create_and_show_graph(pallet_p_graph, pallet_p_options, pallet_p_from_to, axs[0], colors[0], curr_pallet)
+    create_and_show_graph(supervisor_graph, supervisor_options, supervisor_from_to, axs[1], colors[0], curr_supervisor)
+    create_and_show_graph(sub_states_graph, sub_options, sub_from_to,axs[2], colors[0], curr_sub)
+    
+
+for i in range(2):
     create_and_show_graph(pallet_p_graph, pallet_p_options, pallet_p_from_to, axs[0], colors[i % 2])
     create_and_show_graph(supervisor_graph, supervisor_options, supervisor_from_to, axs[1], colors[i % 2])
     create_and_show_graph(sub_states_graph, sub_options, sub_from_to,axs[2], colors[i % 2])
@@ -139,6 +140,9 @@ def main():
 
         print(f'You are in main diagram Initial State: {master.current_state.name}')
         print("Active transitions : ")
+
+        redraw(curr_supervisor=master.current_state.name)
+
         for i in supervisor_from_to[0][1]:
             transition_name = supervisor_transitions[f'transition_0_{i}'].identifier
             if transition_name == "transition_0_1":
@@ -150,6 +154,8 @@ def main():
         elif a == str("0_1"):
             master.current_state.name = "Waiting for empty pallet to arrive"
             print(f'You are in Main diagram state : {master.current_state.name}')
+
+            redraw(curr_supervisor=master.current_state.name)
 
             print("Active transitions : ")
             for i in supervisor_from_to[1][1]:
@@ -167,6 +173,9 @@ def main():
 
                 print(f"You are in 1-st sub diagram state : ", product.current_state.name)
 
+                redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name)
+                
+
                 print("Active transitions : ")
                 for i in sub_from_to[0][1]:
                     transition_name = sub_transitions[f'transition_0_{i}'].identifier
@@ -180,6 +189,8 @@ def main():
                     while True:
                         product.current_state.name = "Waiting for product to arrive"
                         print(f"You are in 1-st sub diagram state : ", product.current_state.name)
+
+                        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name)
 
                         print("Active transitions : ")
                         for i in sub_from_to[1][1]:
@@ -199,6 +210,8 @@ def main():
 
                                 print(f"You are in 2-nd sub diagram state : ", pallet.current_state.name)
 
+                                redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                 print("Active transitions : ")
                                 for i in pallet_p_from_to[0][1]:
                                     transition_name = pallet_p_transitions[f'transition_0_{i}'].identifier
@@ -210,6 +223,8 @@ def main():
                                 elif a2 == str('0_1'):
                                     pallet.current_state.name = "Robot's movement towards product"
                                     print(f'You are in 2-st sub diagram state : {pallet.current_state.name}')
+
+                                    redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
 
                                     print("Active transitions : ")
                                     for i in pallet_p_from_to[1][1]:
@@ -225,6 +240,8 @@ def main():
                                             pallet.current_state.name = "Gripper latches"
                                             print(f'You are in 2-st sub diagram state : {pallet.current_state.name}')
 
+                                            redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                             print("Active transitions : ")
                                             for i in pallet_p_from_to[2][1]:
                                                 transition_name = pallet_p_transitions[f'transition_2_{i}'].identifier
@@ -237,6 +254,9 @@ def main():
                                                 pallet.current_state.name = "Product is up"
                                                 print(
                                                     f'You are in 2-st sub diagram state : {pallet.current_state.name}')
+
+                                                redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
 
                                                 print("Active transitions : ")
                                                 for i in pallet_p_from_to[3][1]:
@@ -263,6 +283,9 @@ def main():
                                         pallet.current_state.name = "Robot's movement towards pallet"
                                         print(f'You are in 2-st sub diagram state : {pallet.current_state.name}')
 
+                                        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
+
                                         print("Active transitions : ")
                                         for i in pallet_p_from_to[4][1]:
                                             transition_name = pallet_p_transitions[f'transition_4_{i}'].identifier
@@ -278,6 +301,9 @@ def main():
                                                 print(
                                                     f'You are in 2-st sub diagram state : {pallet.current_state.name}')
 
+                                                redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
+
                                                 print("Active transitions : ")
                                                 for i in pallet_p_from_to[5][1]:
                                                     transition_name = pallet_p_transitions[
@@ -291,6 +317,9 @@ def main():
                                                     pallet.current_state.name = "Product is released"
                                                     print(
                                                         f'You are in 2-st sub diagram state : {pallet.current_state.name}')
+
+                                                    redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
 
                                                     print("Active transitions : ")
                                                     for i in pallet_p_from_to[6][1]:
@@ -309,6 +338,9 @@ def main():
                                                         continue
                                                     elif g2 == str('6_0'):
                                                         pallet.current_state.name = "Waiting for ready product to hold"
+
+                                                        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                                         break
                                                     else:
                                                         print(error)
@@ -325,6 +357,8 @@ def main():
 
                             print(f"You are in 1-st sub diagram state : ", product.current_state.name)
 
+                            redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                             print("Active transitions : ")
                             for i in sub_from_to[2][1]:
                                 transition_name = sub_transitions[f'transition_2_{i}'].identifier
@@ -336,6 +370,8 @@ def main():
                             elif c1 == str('2_3'):
                                 product.current_state.name = "Product is up"
                                 print(f"You are in 1-st sub diagram state : ", product.current_state.name)
+
+                                redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
 
                                 print("Active transitions : ")
                                 for i in sub_from_to[3][1]:
@@ -349,9 +385,15 @@ def main():
                                     break
                                 elif d1 == str('3_0'):
                                     product.current_state.name = "Waiting for palletization process to start"
+
+                                    redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                     break
                                 elif d1 == str('3_1'):
                                     product.current_state.name = "Waiting for product to arrive"
+
+                                    redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                     continue
                                 else:
                                     print(error)
@@ -373,6 +415,8 @@ def main():
                         master.current_state.name = "Waiting for full pallet to exit"
                         print(f'You are in Main diagram state : {master.current_state.name}')
 
+                        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                         print("Active transitions : ")
                         for i in supervisor_from_to[3][1]:
                             transition_name = supervisor_transitions[f'transition_3_{i}'].identifier
@@ -383,6 +427,8 @@ def main():
                             break
                         elif d == str('3_0'):
                             master.current_state.name = "IDLE"
+                            redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                             continue
                         else:
                             print(error)
