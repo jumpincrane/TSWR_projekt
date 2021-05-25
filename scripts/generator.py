@@ -43,6 +43,7 @@ class Gen(StateMachine):
     def create_object(cls, states, transitions) -> 'Gen':
         return cls(states, transitions)
 
+
 def setTransition(form, object_states):
 
     object_transitions = {}
