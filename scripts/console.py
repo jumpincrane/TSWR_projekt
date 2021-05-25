@@ -1,7 +1,6 @@
 
 
-
-def console_interface(master, product, pallet, supervisor_transitions, sub_transitions, pallet_p_transitions, supervisor_from_to, sub_from_to, pallet_p_from_to):
+def console_interface(master, product, pallet, supervisor_transitions, sub_transitions, pallet_p_transitions, supervisor_from_to, sub_from_to, pallet_p_from_to, redraw):
     pause = "---------------------------------------------------------------------------------------------------------------------"
     print(pause)
     print("AUTOMATIC PALLETIZING PROCESS :)")
@@ -21,6 +20,8 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
             if transition_name == "transition_0_1":
                 print("*    ", transition_name, ": START - motor_pallet: on")
 
+        redraw(curr_supervisor=master.current_state.name)
+
         a = input("Your choice: ")
         if a == str('end'):
             break
@@ -34,6 +35,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                 transition_name = supervisor_transitions[f'transition_1_{i}'].identifier
                 if transition_name == "transition_1_2":
                     print("*    ", transition_name, ": Pallet arrived")
+
+            redraw(curr_supervisor=master.current_state.name)
+
             b = input("Your choice: ")
             if b == str('end'):
                 break
@@ -52,6 +56,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                     transition_name = sub_transitions[f'transition_0_{i}'].identifier
                     if transition_name == "transition_0_1":
                         print("*    ", transition_name, ": Start of the process : motor_object: on")
+
+                redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name)
+
                 a1 = input("Your choice: ")
                 if a1 == str('end'):
                     break
@@ -67,6 +74,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                             transition_name = sub_transitions[f'transition_1_{i}'].identifier
                             if transition_name == "transition_1_2":
                                 print("*    ", transition_name, ": Sensor detects the product : motor_object: off")
+
+                        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name)
+                        
                         b1 = input("Your choice: ")
                         if b1 == str('end'):
                             break
@@ -88,6 +98,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                     transition_name = pallet_p_transitions[f'transition_0_{i}'].identifier
                                     if transition_name == "transition_0_1":
                                         print("*    ", transition_name, ": Start of product movement process")
+
+                                redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                 a2 = input("Your choice: ")
                                 if a2 == str('end'):
                                     break
@@ -101,6 +114,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                         transition_name = pallet_p_transitions[f'transition_1_{i}'].identifier
                                         if transition_name == "transition_1_2":
                                             print("*    ", transition_name, ": Goal position is aimed")
+
+                                    redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                     b2 = input("Your choice: ")
                                     if b2 == str('end'):
                                         break
@@ -116,6 +132,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                                 transition_name = pallet_p_transitions[f'transition_2_{i}'].identifier
                                                 if transition_name == "transition_2_3":
                                                     print("*    ", transition_name, ": Holding up the product")
+
+                                            redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                             c2 = input("Your choice: ")
                                             if c2 == str('end'):
                                                 break
@@ -135,6 +154,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                                     elif transition_name == "transition_3_2":
                                                         print("*    ", transition_name,
                                                               ": Gripper's sensor doesn't detect the product")
+
+                                                redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                                 d2 = input("Your choice: ")
                                                 if d2 == str('end'):
                                                     break
@@ -156,6 +178,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                             transition_name = pallet_p_transitions[f'transition_4_{i}'].identifier
                                             if transition_name == "transition_4_5":
                                                 print("*    ", transition_name, ": Goal position is aimed")
+
+                                        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+                                            
                                         e2 = input("Your choice: ")
                                         if e2 == str('end'):
                                             break
@@ -173,6 +198,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                                         f'transition_5_{i}'].identifier
                                                     if transition_name == "transition_5_6":
                                                         print("*    ", transition_name, ": Releasing the product")
+
+                                                redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                                 f2 = input("Your choice: ")
                                                 if f2 == str('end'):
                                                     break
@@ -192,6 +220,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                                         elif transition_name == "transition_6_0":
                                                             print("*    ", transition_name,
                                                                   ": Gripper's sensor isn't detecting the product")
+
+                                                    redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                                     g2 = input("Your choice: ")
                                                     if g2 == str('end'):
                                                         break
@@ -202,6 +233,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                                         pallet.current_state.name = "Waiting for ready product to hold"
                                                         print(f"You are in 2-st sub diagram idle state : ", pallet.current_state.name)
                                                         print('You are going back to the 1-st sub diagram')
+
+                                                        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                                         break
                                                     else:
                                                         print(error)
@@ -224,6 +258,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                 transition_name = sub_transitions[f'transition_2_{i}'].identifier
                                 if transition_name == "transition_2_3":
                                     print("*    ", transition_name, ": Robot is holding the product")
+
+                            redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                             c1 = input("Your choice: ")
                             if c1 == str('end'):
                                 break
@@ -239,6 +276,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                         print("*    ", transition_name, ": Pallet is full")
                                     if transition_name == "transition_3_1":
                                         print("*    ", transition_name, ": The pallet is not full")
+                                    
+                                redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                 d1 = input("Your choice: ")
                                 if d1 == str('end'):
                                     break
@@ -250,6 +290,8 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                                     break
                                 elif d1 == str('3_1'):
                                     product.current_state.name = "Waiting for product to arrive"
+                                    redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                                     continue
                                 else:
                                     print(error)
@@ -264,6 +306,10 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                         transition_name = supervisor_transitions[f'transition_2_{i}'].identifier
                         if transition_name == "transition_2_3":
                             print("*    ", transition_name, ": Process finished : The pallet is full")
+
+                    redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
+                        
                     c = input("Your choice: ")
                     if c == str('end'):
                         break
@@ -277,6 +323,9 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
                             transition_name = supervisor_transitions[f'transition_3_{i}'].identifier
                             if transition_name == "transition_3_0":
                                 print("*    ", transition_name, "The pallet is full - motor_pallet : on")
+
+                        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
+
                         d = input("Your choice: ")
                         if d == str('end'):
                             break
