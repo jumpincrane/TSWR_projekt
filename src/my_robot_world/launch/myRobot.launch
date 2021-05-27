@@ -42,5 +42,11 @@
 
   <!-- load other controllers -->
   <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false" output="screen" args="load joint_group_position_controller" />
-  
+
+  <!--  load gripper-->
+  <node name="static_transform_publisher" pkg="tf" type="static_transform_publisher" args="0.0 0.0 0.2 0.0 1.0 0.0 0.0 wrist_3_link gripper 1000" />
+
+  <!-- Controller launch  -->
+  <include file="$(find ur10_moveit_config)/launch/ur10_moveit_planning_execution.launch"></include>
+
 </launch>
