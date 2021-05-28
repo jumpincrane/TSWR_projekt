@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="model" default="$(find my_robot_world)/urdf/myRobot.urdf.xacro"/>
+  <arg name="product_fpath" default="$(find my_robot_world)/urdf/product.urdf.xacro" />
   <arg name="rvizconfig" default="$(find my_robot_world)/rviz/myRobot.rviz" />
   <arg name="world" default="$(find my_robot_world)/worlds/empty_world.world" />
   <arg name="limited" default="false"/>
@@ -12,12 +13,12 @@
     <include file="$(find gazebo_ros)/launch/empty_world.launch"> 
     	<arg name="gui" value="$(arg gui)" />
     	<arg name="use_sim_time" value="true" />
-    	<arg name="world_name" value="$(arg world)" />
+<!--    	<arg name="world_name" value="$(arg world)" />-->
     	<arg name="paused" value="$(arg paused)" />
   </include>
   
   <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
-  
+  <param name="product_path" type="str" value="$(arg product_fpath)"/>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" />
@@ -26,8 +27,9 @@
   <node name="spawn_gazebo_robot_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -z 0.0" respawn="false" output="screen" />
   
 
-
-  
+  <!-- spawn the conveyor_belts in gazebo -->
+  <node name="spawn_conveyor_belt_pallet" pkg="gazebo_ros" type="spawn_model" args="-file $(find my_robot_world)/urdf/conveyorbelt_pallet.urdf.xacro -urdf -model conveyor_belt_pallet" />
+  <node name="spawn_conveyor_belt_product" pkg="gazebo_ros" type="spawn_model" args="-file $(find my_robot_world)/urdf/conveyorbelt_product.urdf.xacro -urdf -model conveyor_belt_product" />
     <!-- Fake Calibration -->
   <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
         args="pub /calibrated std_msgs/Bool true" />
