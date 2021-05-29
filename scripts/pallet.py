@@ -33,7 +33,7 @@ pallet_p_graph = nx.MultiDiGraph()
 supervisor_graph = nx.MultiDiGraph()
 sub_states_graph = nx.MultiDiGraph()
 # load states for a master (way of passing args to class)
-with open("./config/options.yaml", "r") as file:
+with open("../config/options.yaml", "r") as file:
     loaded = yaml.load(file, Loader=yaml.FullLoader)
 
 pallet_p_options = loaded["pallet_p_options"]
@@ -44,7 +44,8 @@ pallet_p_states = generate_states(pallet_p_options)
 supervisor_states = generate_states(supervisor_options)
 sub_states = generate_states(sub_options)
 
-with open("./config/from_tos.yaml", 'r') as file:
+
+with open("../config/from_tos.yaml", 'r') as file:
     from_to = yaml.load(file, Loader=yaml.FullLoader)
 
 pallet_p_from_to = from_to["pallet_p_from_to"]
