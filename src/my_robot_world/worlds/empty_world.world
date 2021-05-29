@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+     <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <model name="box">
+      <pose>-0.045 0.843470 0.7052 0 0 0</pose>
+      <static>true</static>
+      <link name="base_link">
+        <collision name="box_collision">
+          <geometry>
+            <box>
+              <size>0.01 0.3 0.01</size>
+            </box>
+          </geometry>
+        </collision>
+
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.01 0.3 0.01</size>
+            </box>
+          </geometry>
+        </visual>
+        <sensor name='my_contact' type='contact'>
+        <update_rate> 100 </update_rate>
+        <always_on>1</always_on>
+          <contact>
+            <collision>box_collision</collision>
+            <topic>/sensor_contact</topic>
+          </contact>
+            <plugin name="gazebo_ros_bumper_controller" filename="libgazebo_ros_bumper.so">
+                <alwaysOn>true</alwaysOn>
+                <updateRate>100</updateRate>
+                <bumperTopicName>/sensor_contact</bumperTopicName>
+                <frameName>world</frameName>
+            </plugin>
+        </sensor>
+      </link>
+    </model>
+
+  </world>
+</sdf>
