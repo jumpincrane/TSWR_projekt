@@ -16,7 +16,8 @@
     	<arg name="world_name" value="$(arg world)" />
     	<arg name="paused" value="$(arg paused)" />
   </include>
-  
+
+
   <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
   <param name="product_path" type="str" value="$(arg product_fpath)"/>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
@@ -49,7 +50,7 @@
   <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false" output="screen" args="load joint_group_position_controller" />
 
   <!--  load gripper-->
-  <node name="static_transform_publisher" pkg="tf" type="static_transform_publisher" args="0.0 0.0 0.2 0.0 1.0 0.0 0.0 wrist_3_link gripper 1000" />
+<!--  <node name="static_transform_publisher" pkg="tf" type="static_transform_publisher" args="0.0 0.0 0.2 0.0 1.0 0.0 0.0 wrist_3_link gripper 1000" />-->
 
   <!-- Controller launch  -->
   <include file="$(find ur10_moveit_config)/launch/ur10_moveit_planning_execution.launch"></include>

@@ -17,11 +17,14 @@ def check_sensor(req):
     object_detected = False
     if not contact_state:
         object_detected = False
+        model_name = ""
     else:
         object_detected = True
+        subs = str(contact_state[0].collision1_name)
+        trim = subs.partition('::')
+        model_name = trim[0]
 
-    return object_detected
-
+    return object_detected, model_name
 
 def main():
     rospy.init_node("contact_sensor_service")

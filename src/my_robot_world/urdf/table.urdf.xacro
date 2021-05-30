@@ -20,6 +20,13 @@
       </geometry>
     </visual>
     
+    <collision>
+	    <origin rpy="0.0 0 0" xyz="0 0 0.35"/>
+	    <geometry>
+	      <cylinder radius="0.3" length="0.7" />
+	    </geometry>
+  	</collision>
+    
     <inertial>
       <origin xyz="0 0 0.35" rpy="0 0 0"/>
       <mass value="20"/>

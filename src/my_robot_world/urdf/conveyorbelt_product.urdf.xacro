@@ -3,7 +3,7 @@
 
 <!-- conveyor belt is just a long flat box for objects to slide on it -->
 
- world link
+<!-- world link-->
 <link name="world"/>
 
 <!-- base_link and its fixed joint -->

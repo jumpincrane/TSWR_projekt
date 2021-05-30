@@ -3,6 +3,9 @@
   
   <xacro:include filename="$(find my_robot_world)/urdf/table.urdf.xacro" />
   <xacro:table />
+
+  
+
   
   <xacro:arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface"/>
 
@@ -25,10 +28,16 @@
     kinematics_file="${load_yaml('$(arg kinematics_config)')}"
   />
 
+
+  
+
   <joint name="table_joint" type="fixed">
     <parent link="table_link" />
     <child link = "base_link" />
-    <origin xyz="0.0 0.0 0.7" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.0 0.0 0.701" rpy="0.0 0.0 0.0" />
   </joint>
+
+
+
     
 </robot>
