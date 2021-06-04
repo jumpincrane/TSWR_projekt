@@ -2,6 +2,7 @@
 <launch>
   <arg name="model" default="$(find my_robot_world)/urdf/myRobot.urdf.xacro"/>
   <arg name="product_fpath" default="$(find my_robot_world)/urdf/product.urdf.xacro" />
+  <arg name="pallet_fpath" default="$(find my_robot_world)/urdf/bin.urdf.xacro" />
   <arg name="rvizconfig" default="$(find my_robot_world)/rviz/myRobot.rviz" />
   <arg name="world" default="$(find my_robot_world)/worlds/empty_world.world" />
   <arg name="limited" default="false"/>
@@ -20,6 +21,7 @@
 
   <param name="robot_description" command="$(find xacro)/xacro $(arg model)" />
   <param name="product_path" type="str" value="$(arg product_fpath)"/>
+  <param name="pallet_path" type="str" value="$(arg pallet_fpath)"/>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
   <node name="contact_sensor_service" pkg="my_robot_world"  type="contact_sensor.py" />
   <node name="products_spawner" pkg="my_robot_world" type="product_spawner.py" />

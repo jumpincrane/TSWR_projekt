@@ -38,7 +38,7 @@ def main():
     # initial spawn model
     i = 0
     spawn_model_msg.model_xml = product_xml
-    spawn_model_msg.initial_pose.position.x = 7.0
+    spawn_model_msg.initial_pose.position.x = 4.0
     spawn_model_msg.initial_pose.position.y = 0.843470
     spawn_model_msg.initial_pose.position.z = 0.71
     spawn_model_msg.initial_pose.orientation.x = 0.0
