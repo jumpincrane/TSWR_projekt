@@ -81,7 +81,7 @@ def main():
 
     pallet_path = rospy.get_param("pallet_path")
 
-    arm_move_group = moveit_commander.MoveGroupCommander("manipulator")
+    # arm_move_group = moveit_commander.MoveGroupCommander("manipulator")
     robot_commander = moveit_commander.RobotCommander()
 
     compute_ik_srv = rospy.ServiceProxy("/compute_ik", GetPositionIK)

@@ -1,0 +1,6 @@
+[submodule "gazebo_ros_link_attacher"]
+    path = src/gazebo_ros_link_attacher
+    url = https://github.com/pal-robotics/gazebo_ros_link_attacher
+[submodule "universal_robot"]
+    path = src/universal_robot
+    url = https://github.com/ros-industrial/universal_robot
