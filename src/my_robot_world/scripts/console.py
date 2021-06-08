@@ -5,6 +5,20 @@ def print_transitions(state_machine):
             if i.source.name == state_machine.current_state.name:
                 print(i.identifier)
 
+def check_transition(state_machines, state_machine_name, trans_nr):
+    znalazło = False
+    for machine in state_machines:
+        if machine.name == state_machine_name:
+            for transition in machine.transitions:
+                    if transition.identifier == trans_nr:
+                        znalazło = True
+    if znalazło == True:
+        correct_nr = True
+    else:
+        correct_nr = False
+    return correct_nr
+
+
 def process(state_machines, name, nr_transition):
     for machine in state_machines:
         if machine.name == name:
@@ -29,10 +43,21 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
         print(pause)
         redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
         for state in state_machines:
-            print_transitions(state)  
-        print('First choose name of automata and press enter') 
-        name = input()
+            print_transitions(state)
+        correct_name = True
+        correct_nr = True
+        while correct_name:
+            print('First choose name of automata and press enter')
+            name = input()
+            if name == 'master' or name == 'product' or name == 'pallet':
+                correct_name = False
         print('Now write down number of transition in format <int>_<int> and press enter') 
         nr_transition = input()
         t = 'transition_'+nr_transition
-        process(state_machines, name, t)
+        correct_nr = check_transition(state_machines, name, t)
+        while correct_nr:
+            if correct_nr == True:
+                process(state_machines, name, t)
+                break
+            else:
+                correct_nr == False
