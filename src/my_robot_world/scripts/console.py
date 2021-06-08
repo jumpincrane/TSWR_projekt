@@ -27,6 +27,7 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
 
     while True:
         print(pause)
+        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
         for state in state_machines:
             print_transitions(state)  
         print('First choose name of automata and press enter') 
@@ -35,4 +36,3 @@ def console_interface(master, product, pallet, supervisor_transitions, sub_trans
         nr_transition = input()
         t = 'transition_'+nr_transition
         process(state_machines, name, t)
-        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)

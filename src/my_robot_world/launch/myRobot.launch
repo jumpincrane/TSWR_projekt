@@ -9,6 +9,8 @@
   <arg name="paused" default="false"/>
   <arg name="gui" default="true"/>
   <arg name="sim" default="true"/>
+  <arg name="from_tos" default="$(find my_robot_world)/config/from_tos.yaml" />
+  <arg name="options" default="$(find my_robot_world)/config/options.yaml" />
   
   <!-- startup simulated world -->
     <include file="$(find gazebo_ros)/launch/empty_world.launch"> 
@@ -26,6 +28,7 @@
   <node name="contact_sensor_service" pkg="my_robot_world"  type="contact_sensor.py" />
   <node name="products_spawner" pkg="my_robot_world" type="product_spawner.py" />
   <node name="moveit_robot" pkg="my_robot_world" type="robot.py" output="screen" />
+  <node name="pallet" pkg="my_robot_world" type="pallet.py" args=" $(arg from_tos) $(arg options)" launch-prefix="gnome-terminal --" />
   
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" />
     
