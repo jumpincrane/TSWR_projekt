@@ -4,45 +4,45 @@ pallet_p_options:
   value: idle
 - initial: false
   name: Robot's movement towards product
-  value: a
+  value: Moving
 - initial: false
   name: Gripper latches
-  value: b
+  value: Latch
 - initial: false
   name: Product is up
-  value: c
+  value: Product up
 - initial: false
   name: Robot's movement towards pallet
-  value: d
+  value: Moving
 - initial: false
   name: Gripper opens
-  value: e
+  value: Gripper open
 - initial: false
   name: Product is released
-  value: f
+  value: Released
 sub_options:
 - initial: true
   name: Waiting for palletization process to start
   value: idle
 - initial: false
   name: Waiting for product to arrive
-  value: a
+  value: Arrival
 - initial: false
   name: Product is ready to hold
-  value: b
+  value: Product ready
 - initial: false
   name: Product is up
-  value: c
+  value: Product up
 supervisor_options:
 - initial: true
   name: IDLE
   value: idle
 - initial: false
   name: Waiting for empty pallet to arrive
-  value: a
+  value: Waiting
 - initial: false
   name: Palletizing process
-  value: b
+  value: Palletizing
 - initial: false
   name: Waiting for full pallet to exit
-  value: c
+  value: Exit

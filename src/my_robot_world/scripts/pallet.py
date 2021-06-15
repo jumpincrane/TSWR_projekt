@@ -4,11 +4,24 @@ import sys
 import yaml
 import networkx as nx
 import matplotlib.pyplot as plt
+import rospy
 
-from console import console_interface
+from my_robot_world.srv import *
+from console import console_interface, testing
 from generator import Gen, setTransition, generate_states
 from statemachine import StateMachine, State, Transition
 
+def send_command(command):
+    rospy.wait_for_service('cmd')
+    try:
+        send_cmd = rospy.ServiceProxy('cmd', cmd)
+        send_cmd(command)
+    except rospy.ServiceException as e:
+        print("Service call failed: %s" % e)
+
+def test(self):
+    # send_command(1)
+    pass
 
 # Supervisor process
 # IDLE                                                  +
@@ -35,8 +48,11 @@ pallet_p_graph = nx.MultiDiGraph()
 supervisor_graph = nx.MultiDiGraph()
 sub_states_graph = nx.MultiDiGraph()
 # load states for a master (way of passing args to class)
+# options_filename = "./src/my_robot_world/config/options.yaml"
+# from_tos_filename = "./src/my_robot_world/config/from_tos.yaml"
 # options_filename = "../config/options.yaml"
-#from_tos_filename = "../config/from_tos.yaml"
+# from_tos_filename = "../config/from_tos.yaml"
+
 from_tos_filename = sys.argv[1]
 options_filename = sys.argv[2]
 with open(options_filename, "r") as file:
@@ -50,6 +66,8 @@ pallet_p_states = generate_states(pallet_p_options)
 supervisor_states = generate_states(supervisor_options)
 sub_states = generate_states(sub_options)
 
+clbck = {"callable_0_1": test}
+
 
 with open(from_tos_filename, 'r') as file:
     from_to = yaml.load(file, Loader=yaml.FullLoader)
@@ -58,9 +76,9 @@ pallet_p_from_to = from_to["pallet_p_from_to"]
 supervisor_from_to = from_to["supervisor_from_to"]
 sub_from_to = from_to["sub_from_to"]
 
-pallet_p_states, pallet_p_transitions = setTransition(pallet_p_from_to, pallet_p_states)
-supervisor_states, supervisor_transitions = setTransition(supervisor_from_to,supervisor_states)
-sub_states, sub_transitions = setTransition(sub_from_to, sub_states)
+pallet_p_states, pallet_p_transitions = setTransition(pallet_p_from_to, pallet_p_states, clbck)
+supervisor_states, supervisor_transitions = setTransition(supervisor_from_to,supervisor_states, clbck)
+sub_states, sub_transitions = setTransition(sub_from_to, sub_states, clbck)
 
 
 
@@ -72,9 +90,9 @@ def create_and_show_graph(graph, states, edges, ax, color, current=""):
         initial, name, value = dict.values()
         # name is node's attribute
         if name == current:
-            graph.add_node(i, name=name, color="red")
+            graph.add_node(i, name=value, color="red")
         else:
-            graph.add_node(i, name=name, color=color)
+            graph.add_node(i, name=value, color=color)
         i+=1
 
     # get all labels for drawing
@@ -92,7 +110,7 @@ def create_and_show_graph(graph, states, edges, ax, color, current=""):
 
     # offset labels along y axis so they are above nodes
     pos_higher = {}
-    y_off = 0.1  
+    y_off = 0.15
     for k, v in pos.items():
         pos_higher[k] = (v[0], v[1]+y_off)
     nx.draw_networkx_labels(graph, pos_higher, labels, ax=ax)
@@ -117,18 +135,19 @@ for i in range(2):
     plt.pause(0.1)
 
 
+
 def main():
 
     # create an object
-    pallet = Gen.create_object(pallet_p_states, pallet_p_transitions)
-    product = Gen.create_object(sub_states, sub_transitions)
-    master = Gen.create_object(supervisor_states, supervisor_transitions)
-    console_interface(master, product, pallet, supervisor_transitions, sub_transitions, pallet_p_transitions, supervisor_from_to, sub_from_to, pallet_p_from_to, redraw)
-
-    print(pallet)
+    pallet = Gen.create_object(pallet_p_states, pallet_p_transitions, pallet_p_from_to, clbck)
+    product = Gen.create_object(sub_states, sub_transitions, sub_from_to, clbck)
+    master = Gen.create_object(supervisor_states, supervisor_transitions, supervisor_from_to, clbck)
+    # console_interface(master, product, pallet, supervisor_transitions, sub_transitions, pallet_p_transitions, supervisor_from_to, sub_from_to, pallet_p_from_to, redraw)
+    testing(master, product, pallet, supervisor_transitions, sub_transitions, pallet_p_transitions, supervisor_from_to, sub_from_to, pallet_p_from_to, redraw)
 
 
 
 if __name__ == '__main__':
     main()
+
 

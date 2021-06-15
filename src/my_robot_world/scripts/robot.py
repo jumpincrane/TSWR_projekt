@@ -13,6 +13,14 @@ from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Pose
 from gazebo_ros_link_attacher.srv import *
 import numpy as np
+from my_robot_world.srv import cmd, cmdRequest
+
+command = 0
+
+def handle_cmd(req):
+    global command
+    command = req.cmd
+
 
 
 def pq_to_pose(p, q):
@@ -77,7 +85,9 @@ def main():
     rospy.init_node("moveit_robot")
     pub = rospy.Publisher('/arm_controller/follow_joint_trajectory/goal', FollowJointTrajectoryActionGoal,
                           queue_size=1000)
+    s = rospy.Service('cmd', cmd, handle_cmd)
     rate = rospy.Rate(10.0)
+
 
     pallet_path = rospy.get_param("pallet_path")
 
@@ -102,7 +112,7 @@ def main():
     product_number = 0
     spawn_pallet(pallet_xml, f"pallet{pallet_id}")
     while not rospy.is_shutdown():
-
+        print(f"CMD: {command}")
         goal_pose = move_robot(wait_product_pos)
         rospy.sleep(1)
         sensor = spawn_client.call(1)
