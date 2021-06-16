@@ -1,5 +1,5 @@
 from statemachine import Transition
-import time
+import itertools
 def print_transitions(state_machine):
     print(f'Available transitions for diagram : {state_machine.name}')
     for i in state_machine.transitions:
@@ -77,6 +77,30 @@ def testing(master, product, pallet, supervisor_transitions, sub_transitions, pa
     print(pause)
     state_machines = [master, product, pallet]
 
+    answers = [("Waiting", "idle", "idle"),
+               ("Palletizing", "idle", "idle"),
+               ("Palletizing", "Arrival", "idle"),
+               ("Palletizing", "Product ready", "idle"),
+               ("Palletizing", "Product ready", "Moving"),
+               ("Palletizing", "Product ready", "Latch"),
+               ("Palletizing", "Product ready", "Product up"),
+               ("Palletizing", "Product ready", "Latch"),
+               ("Palletizing", "Product ready", "Product up"),
+               ("Palletizing", "Product ready", "Moving"),
+               ("Palletizing", "Product ready", "Gripper open"),
+               ("Palletizing", "Product ready", "Released"),
+               ("Palletizing", "Product ready", "Gripper open"),
+               ("Palletizing", "Product ready", "Released"),
+               ("Palletizing", "Product ready", "idle"),
+               ("Palletizing", "Product up", "idle"),
+               ("Palletizing", "Arrival", "idle"),
+               ("Palletizing", "Product ready", "idle"),
+               ("Palletizing", "Product up", "idle"),
+               ("Palletizing", "idle", "idle"),
+               ("Exit", "idle", "idle"),
+               ("idle", "idle", "idle")]
+
+
     path = [("master", "transition_0_1"),
             ("master", "transition_1_2"),
             ("product", "transition_0_1"),
@@ -100,10 +124,12 @@ def testing(master, product, pallet, supervisor_transitions, sub_transitions, pa
             ("master", "transition_2_3"),
             ("master", "transition_3_0")]
 
-    for name, t in path:
-        redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
-        input()
-            # correct_nr = check_transition(state_machines, name, t)
+    for step, ans in zip(path, answers):
+        name, t = step
+        master_state, product_state, pallet_state = ans
+
         process(state_machines, name, t)
-    redraw(curr_supervisor=master.current_state.name, curr_sub=product.current_state.name, curr_pallet=pallet.current_state.name)
-    input()
+        assert master.current_state.value == master_state
+        assert product.current_state.value == product_state
+        assert pallet.current_state.value == pallet_state
+    print("Test completed successfully!")

@@ -142,8 +142,8 @@ def main():
     pallet = Gen.create_object(pallet_p_states, pallet_p_transitions, pallet_p_from_to, clbck)
     product = Gen.create_object(sub_states, sub_transitions, sub_from_to, clbck)
     master = Gen.create_object(supervisor_states, supervisor_transitions, supervisor_from_to, clbck)
-    # console_interface(master, product, pallet, supervisor_transitions, sub_transitions, pallet_p_transitions, supervisor_from_to, sub_from_to, pallet_p_from_to, redraw)
     testing(master, product, pallet, supervisor_transitions, sub_transitions, pallet_p_transitions, supervisor_from_to, sub_from_to, pallet_p_from_to, redraw)
+    console_interface(master, product, pallet, supervisor_transitions, sub_transitions, pallet_p_transitions, supervisor_from_to, sub_from_to, pallet_p_from_to, redraw)
 
 
 
