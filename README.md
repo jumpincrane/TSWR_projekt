@@ -16,3 +16,24 @@ Poszczególne stany oraz przejścia między nimi w każdym z automatów przedsta
 # Schemat procesu
 ![Graph](https://github.com/patrykGawron/TSWR_projekt/blob/master/diagrams.png)
 
+## Build:
+```bash
+mkdir -p catkin_ws
+
+cd ~/catkin_ws
+
+sudo apt-get install ros-noetic-moveit-commander ros-noetic-gazebo-ros-pkgs ros-noetic-gazebo-ros-control ros-noetic-moveit-ros-planning-interface ros-noetic-moveit-planners-ompl ros-noetic-joint-trajectory-controller ros-noetic-tf-conversions ros-noetic-ur-client-library ros-noetic-industrial-robot-status-interface ros-noetic-position-controllers ros-noetic-robot-state-publisher ros-noetic-tf2-tools ros-noetic-moveit-simple-controller-manager
+
+git clone https://github.com/patrykGawron/TSWR_projekt.git
+
+catkin_make
+
+source devel/setup.bash
+
+chmod +x ~/catkin_ws/src/my_robot_world/scripts/*
+```
+
+## Visualisation Launch:
+```bash
+roslaunch my_robot_world myRobot.launch
+```
